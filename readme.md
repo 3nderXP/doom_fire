@@ -1,3 +1,3 @@
 # Altoritmo do fogo do Doom.
 
-Algoritmo baseado no algoritmo do programador *Filipe Deschamps*.
+Projeto baseado no algoritmo desenvolvido pelo programador *Filipe Deschamps*.
