@@ -1,35 +1,17 @@
 *{
-    font-family: monospace;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
-#fogo-container table{
-    width: 250px;
-    height: 250px;
-    border-collapse: collapse;
-    border: 1px solid #000;
+#screen{
+    border: 5px solid #bbb;
+    width: 500px;
+    height: 500px;
+    image-rendering: pixelated;
+    background-color: #000000;
 }
 
-#fogo-container table[data-debug="false"] tr td{
-    border: none;
-}
-
-#fogo-container table[data-debug="false"] tr td *{
-    display: none;
-}
-
-#fogo-container table tr td{
-    border: 1px solid #000;
-    width: 5px;
-    height: 5px;
-    text-align: center;
-    vertical-align: center;
-    position: relative;
-}
-
-#fogo-container table tr td .indice{
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 10pt;
-    color: #bbb;
+.paleta {
+    color: #07000f
 }

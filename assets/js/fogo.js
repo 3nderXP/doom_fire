@@ -1,150 +1,145 @@
-const fogoContainer = document.querySelector('#fogo-container')
-const debug = false
-const velocidadeDoFogo = 50
-const fogo = {
-    pixels: [],
-    largura: 36,
-    altura: 36,
-    paleta: {
-        0: '#000000',
-        1: '#00060f',
-        2: '#000814',
-        3: '#000c1f',
-        4: '#00132e',
-        5: '#00183b',
-        6: '#001a40',
-        7: '#002152',
-        8: '#002966',
-        9: '#003178',
-        10: '#003480',
-        11: '#003a8f',
-        12: '#003f9c',
-        13: '#0047b0',
-        14: '#0051c7',
-        15: '#005ce3',
-        16: '#0067ff',
-        17: '#0a6eff',
-        18: '#1c78ff',
-        19: '#2b81ff',
-        20: '#3887fc',
-        21: '#4a93ff',
-        22: '#61a1ff',
-        23: '#75adff',
-        24: '#8ab9ff',
-        25: '#99c2ff',
-        26: '#a8cbff',
-        27: '#b8d5ff',
-        28: '#c9dfff',
-        29: '#d9e8ff',
-        30: '#e6f0ff',
-        31: '#ffffff'
-    }
+const screen = document.querySelector('#screen'),
+      screenContext = screen.getContext('2d'),
+      fire = {
+          pixels: [],
+          width: 64,
+          height: 64,
+          paleta: {
+            0: '#000000',
+            1: '#00060f',
+            2: '#000814',
+            3: '#000c1f',
+            4: '#00132e',
+            5: '#00183b',
+            6: '#001a40',
+            7: '#002152',
+            8: '#002966',
+            9: '#003178',
+            10: '#003480',
+            11: '#003a8f',
+            12: '#003f9c',
+            13: '#0047b0',
+            14: '#0051c7',
+            15: '#005ce3',
+            16: '#0067ff',
+            17: '#0a6eff',
+            18: '#1c78ff',
+            19: '#2b81ff',
+            20: '#3887fc',
+            21: '#4a93ff',
+            22: '#61a1ff',
+            23: '#75adff',
+            24: '#8ab9ff',
+            25: '#99c2ff',
+            26: '#a8cbff',
+            27: '#b8d5ff',
+            28: '#c9dfff',
+            29: '#d9e8ff',
+            30: '#e6f0ff',
+            31: '#ffffff'
+        }
+      }
+
+let fireUseInterval = null
+
+screen.width = fire.width
+screen.height = fire.height
+
+function ignite(){
+
+    screenContext.clearRect(0, 0, screen.width, screen.height)
+
+    baseStructure()
+    fireSource(true)
+    render()
+
+    clearInterval(fireUseInterval)
+
+    fireUseInterval = setInterval(() => {
+
+        calculateFirePropagation()
+
+    }, 50)
+    
 }
 
-const paleta = {}
+function putOutFire(){
 
-for(let i = 32; i > 0; i--){
-
-    paleta[32 - i] = fogo.paleta[i - 1]
+    fireSource(false)
 
 }
 
-let interval = null
+function baseStructure(){
 
-function acender(){
+    for(let i = 0; i < (fire.width * fire.height); i++){
 
-    estruturaBase()
-    fonteDoFogo()
-    renderizar()
-    setInterval(calcularPropagacaoDoFogo, velocidadeDoFogo)
-
-}
-
-function estruturaBase(){
-
-    for(let pixel = 0; pixel < (fogo.largura * fogo.altura); pixel++){
-
-        fogo.pixels[pixel] = 0
-
-    }
-
-}
-
-function fonteDoFogo(){
-
-    for(let coluna = 0; coluna < fogo.largura; coluna++){
-
-        let pixelAtual = fogo.pixels.length - fogo.largura + coluna
-
-        fogo.pixels[pixelAtual] = 31
+        fire.pixels[i] = 0
 
     }
 
 }
 
-function calcularPropagacaoDoFogo(){
+function fireSource(state){
 
-    for(let coluna = 0; coluna < fogo.largura; coluna++){
+    for(let column = 0; column < fire.width; column++){
 
-        for(let linha = 0; linha < fogo.altura; linha++){
+        const currentPixel = fire.pixels.length - fire.width + column
 
-            const pixelAtual = coluna + (fogo.largura * linha)
-            
-            atualizarPropagacaoDoFogo(pixelAtual)
+        fire.pixels[currentPixel] = state ? 31 : 0
+
+    }
+
+}
+
+function calculateFirePropagation(){
+
+    for(let column = 0; column < fire.width; column++){
+
+        for(let row = 0; row < fire.height; row++){
+
+            const currentPixel = column + (fire.width * row)
+
+            updateFireStructure(currentPixel)
 
         }
 
     }
 
-    renderizar()
+    render()
 
 }
 
-function atualizarPropagacaoDoFogo(pixelAtual){
-
-    const indiceDoPixelAbaixo = pixelAtual + fogo.largura,
-          intensidadeDoPixelAbaixo = fogo.pixels[indiceDoPixelAbaixo],
-          diminuirIntensidade = Math.floor(Math.random() * 3)
+function updateFireStructure(pixel){
     
-    if(indiceDoPixelAbaixo >= fogo.pixels.length){
+    const belowPixelIndice = pixel + fire.width,
+          belowPixelIntensity = fire.pixels[belowPixelIndice],
+          decay = Math.floor(Math.random() * 3)
+    
+    if(belowPixelIndice >= fire.pixels.length){
 
         return
 
     }
-    
-    fogo.pixels[pixelAtual - -diminuirIntensidade] = intensidadeDoPixelAbaixo - diminuirIntensidade >= 0 ? intensidadeDoPixelAbaixo - diminuirIntensidade : 0
+
+    fire.pixels[pixel - decay] = belowPixelIntensity - decay >= 0 ? belowPixelIntensity - decay : 0
 
 }
 
-function renderizar(){
+function render(){
+    
+    for(let row = 0; row < fire.height; row++){
+        
+        for(let column = 0; column < fire.width; column++){
 
-    let html = `<table data-debug="${debug}">`
-
-    for(linha = 0; linha < fogo.altura; linha++){
-
-        html += `<tr>`
-
-        for(coluna = 0; coluna < fogo.largura; coluna++){
-
-            pixelAtual = coluna + (fogo.largura * linha)
-
-            html += `<td style="background-color: ${fogo.paleta[fogo.pixels[pixelAtual]]};">`
-
-            html += `<span class="indice">${pixelAtual}</span>`
-            html += `<span class="intensidade">${fogo.pixels[pixelAtual]}</span>`
-
-            html += `</td>`
+            const currentPixel = column + (fire.width * row)
+            
+            screenContext.fillStyle = fire.paleta[fire.pixels[currentPixel]]
+            screenContext.fillRect(column, row, 1, 1)
 
         }
 
-        html += `</tr>`
-        
     }
-    
-    html += `</table>`
-
-    fogoContainer.innerHTML = html
 
 }
 
-acender()
+ignite()
